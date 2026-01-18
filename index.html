@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кодекс Рыцаря</title>
+    <style>
+        :root {
+            --accent: #D4AF37;
+            --accent-dark: #B8860B;
+            --accent-light: #F0E68C;
+            --primary: #8B4513;
+            --secondary: #654321;
+            --danger: #8B0000;
+            --success: #228B22;
+            --warning: #DAA520;
+            --dark: #2F4F4F;
+            --light: #F5F5DC;
+            --stone: #C0C0C0;
+            --gradient-primary: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+            --gradient-secondary: linear-gradient(135deg, #2F4F4F 0%, #1C2F2F 100%);
+            --gradient-success: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            --gradient-warning: linear-gradient(135deg, #8B4513 0%, #DAA520 100%);
+            --gradient-dark: linear-gradient(135deg, #2F4F4F 0%, #1C2F2F 100%);
+            --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+            /* subtle shadows (soft, low-contrast) */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 20px rgba(0,0,0,0.10);
+            /* offset for menu placement under header */
+            --menu-offset: 112px;
+            --menu-gap: 12px;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            cursor: url('curosr.cur'), auto;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: #2F4F4F; /* fallback for older Safari */
+            background-image: 
+                linear-gradient(rgba(47, 79, 79, 0.9), rgba(28, 47, 47, 0.9)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232F4F4F"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="%231C2F2F" stroke-width="1"/></svg>');
+            background-repeat: no-repeat, repeat;
+            background-size: cover, auto;
+            background-position: center center, 0 0;
+            min-height: 100vh;
+            color: #F5F5DC;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            z-index: 0; /* ensure stacking context so pseudo-elements sit behind content in Safari */
+            /* removed decorative outer frame per request */
+            border: none;
+            border-image: none;
+            /* removed inset shadow */
+            box-shadow: none;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 69, 19, 0.1) 0%, transparent 50%);
+            z-index: 0; /* avoid negative z-index which can hide pseudo-elements in some Safari versions */
+        }
+
+        /* Гербовые украшения */
+        body::after {
+            content: '⚔️ 🛡️ 🏰';
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.3;
+            z-index: 0; /* keep decorative icons behind main content but above background */
+            animation: float 15s ease-in-out infinite;
+        }
+
+        /* Ensure main site content sits above the decorative pseudo-elements (Safari-safe) */
+        header, main, .container, .card, .scene {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Улучшенный header в стиле замковых ворот */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: linear-gradient(to bottom, #654321, #8B4513);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 4px solid var(--accent);
+            border-image: linear-gradient(90deg, #D4AF37, #FFD700) 1;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* gap fallback for older Safari: apply left margin to adjacent siblings */
+        .logo-container > * + * { margin-left: 20px; }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 2rem;
+            color: #D4AF37; /* fallback color for browsers without gradient text support */
+            font-weight: 700;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            font-family: 'Papyrus', fantasy;
+        }
+
+        .logo > * + * { margin-left: 15px; }
+
+        /* Fallback for browsers (older Safari) that don't support gap on flex */
+        @supports not (gap: 1px) {
+            .logo-container > * + *, .row > * + *, .editor-tools > * + *, .tool > * + *, .module-list > * + *, .module-card > * + *, .menu-item > * + * {
+                margin-left: 12px;
+            }
+            /* vertical spacing fallback for flex-wrap containers */
+            .editor-tools, .tool-row, .module-list { row-gap: 12px; }
+        }
+
+        .logo::before {
+            content: '⚔️';
+            font-size: 2.5rem;
+            filter: none;
+        }
+
+        /* Кнопка звука в виде щита */
+        #sound-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            border: 4px solid #8B4513;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #2F4F4F;
+            box-shadow: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: none;
+        }
+
+        #sound-button:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: none;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Карточки в стиле пергаментных свитков */
+        .card {
+            background: 
+        
+        /* Module cards styling kept intact below */
+                linear-gradient(rgba(245, 245, 220, 0.95), rgba(222, 184, 135, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23DEB887"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="%23A0522D" stroke-width="0.5" opacity="0.3"/></svg>');
+            border-radius: var(--radius-lg);
+            padding: 50px;
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+            max-width: 1200px;
+            border: 8px solid transparent;
+            border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%238B4513"/><path d="M0,20 L100,20 M0,40 L100,40 M0,60 L100,60 M0,80 L100,80" stroke="%23D4AF37" stroke-width="4"/></svg>') 30 stretch;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            color: #2F4F4F;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, #8B4513, #D4AF37, #8B4513);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Заголовки в стиле готических надписей */
+        h1 {
+            font-size: 3.5rem;
+            background: var(--gradient-primary);
+            color: #FFD700; /* fallback for browsers that don't support background-clip text */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            font-weight: 800;
+            text-align: center;
+            position: relative;
+            padding-bottom: 25px;
+            font-family: 'UnifrakturMaguntia', cursive;
+            text-shadow: none;
+        }
+
+        h1::after {
+            content: '⚔️⚔️⚔️';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            letter-spacing: 10px;
+            opacity: 0.7;
+        }
+
+        /* Главная страница */
+        #home .card {
+            background: 
+                linear-gradient(rgba(47, 79, 79, 0.95), rgba(28, 47, 47, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><pattern id="castle" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0,0 L40,0 L40,40 L0,40 Z" fill="none" stroke="%23D4AF37" stroke-width="2"/><path d="M20,0 L20,40 M0,20 L40,20" stroke="%238B4513" stroke-width="1"/></pattern></defs><rect width="200" height="200" fill="url(%23castle)"/></svg>');
+            color: #F0E68C;
+            text-align: center;
+            padding: 80px 60px;
+            border: 12px solid transparent;
+            border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23D4AF37"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="%238B4513" stroke-width="4"/></svg>') 30 stretch;
+        }
+
+        #home h1 {
+            background: linear-gradient(90deg, #FFD700, #D4AF37, #B8860B);
+            color: #FFD700; /* fallback color */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 4.5rem;
+            margin-bottom: 40px;
+            text-shadow: none;
+        }
+
+        #home h1::after {
+            content: '🛡️⚔️🏰';
+            font-size: 2rem;
+            letter-spacing: 20px;
+        }
+
+        #home p {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            line-height: 1.8;
+            font-weight: 300;
+            text-shadow: none;
+        }
+
+        /* Кнопки в стиле рыцарских щитов и мечей */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-sizing: border-box;
+            background: var(--gradient-primary);
+            color: #F0E68C;
+            border: 3px solid #D4AF37;
+            padding: 12px 20px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: none;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+            min-height: 44px;
+            max-width: 100%;
+            white-space: normal;
+            word-break: break-word;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+            pointer-events: none;
+        }
+
+        .button:hover::before {
+            transform: translateX(100%);
+        }
+
+        .button:hover {
+            transform: translateY(-4px);
+            box-shadow: none;
+            border-color: #FFD700;
+        }
+
+        .button:active {
+            transform: translateY(-1px) scale(0.995);
+        }
+
+        .button.start {
+            background: var(--gradient-warning);
+            font-size: 1.25rem;
+            padding: 16px 28px;
+            border-radius: var(--radius-md);
+            box-shadow: none;
+            animation: swordGlow 3s ease-in-out infinite;
+            border: 4px solid #D4AF37;
+            display: inline-flex;
+        }
+
+        @keyframes swordGlow {
+            0%, 100% { 
+                transform: translateY(0) scale(1);
+                box-shadow: none;
+            }
+            50% { 
+                transform: translateY(-10px) scale(1.05);
+                box-shadow: none;
+            }
+        }
+
+        /* Utility and layout classes (replacing inline styles) */
+        .hidden { display: none !important; }
+        .version-label { font-size:1em; color: #D4AF37; opacity: 0.9; margin-right: 10px; font-family: 'Cinzel', serif; }
+        .intro-text { opacity: 0.9; }
+        .home-actions { margin-top: 40px; }
+        .feature-box { margin-top: 25px; color: rgba(240,230,140,0.9); font-size:1.1rem; max-width:700px; margin:30px auto 0; padding:20px; background:rgba(139,69,19,0.3); border-radius:var(--radius-md); border:2px solid #D4AF37; }
+        .module-grid { margin-top:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+        .center-text { margin-top:12px; text-align:center; }
+        .mt-25 { margin-top:25px; }
+        .lesson-layout { margin-top:20px; }
+
+        .btn-alt { background:#654321; border-color:#8B4513; }
+        .btn-dark { background:#2F4F4F; border-color:#D4AF37; }
+        .btn-back { background:#8B4513; border-color:#654321; }
+        .btn-hidden { display:none; }
+
+        .scene-title { margin-bottom:15px; font-size:1.4rem; font-weight:600; font-family:'Cinzel', serif; }
+        .status-inline { margin-top:20px; color:#F0E68C; font-weight:500; font-family:'Cinzel', serif; }
+        .timer-inline { margin-top:15px; color:#F0E68C; font-weight:500; font-family:'Cinzel', serif; }
+
+        /* Controls & gap fallbacks */
+        .menu-list { display:flex; flex-direction:column; gap:10px; }
+        .controls-row { margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; }
+        .small-controls { margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+        .editor-tools-row { margin-top:15px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .register-actions { margin-top:25px; display:flex; gap:10px; flex-wrap:wrap; }
+        .account-actions { margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; }
+        .account-header { display:flex; align-items:center; gap:15px; margin-bottom:15px; padding:20px; background:rgba(139,69,19,0.3); border-radius:var(--radius-md); border:3px solid #D4AF37; }
+
+        @supports not (gap: 1px) {
+            .menu-list > * + *, .controls-row > * + *, .small-controls > * + *, .editor-tools-row > * + *, .register-actions > * + *, .account-actions > * + *, .account-header > * + * { margin-left: 12px; }
+            .controls-row > * { margin-top: 8px; }
+            .small-controls > * { margin-top: 6px; }
+        }
+
+        /* Module card buttons should stretch to container but keep inner centering */
+        .module-card .button, .module-list .button { width: 100%; display: inline-flex; justify-content:center; align-items:center; box-sizing: border-box; }
+        .mt-15 { margin-top: 15px; }
+        .right-actions { margin-top:20px; text-align: right; }
+        .theory-sidebar { background: linear-gradient(135deg, rgba(245,245,220,0.95), rgba(222,184,135,0.95)); padding:20px; border-radius:var(--radius-md); border:3px solid #8B4513; max-width:320px; margin-left:20px; }
+        .theory-short { font-size:0.95rem; color:#2F4F4F; line-height:1.5; }
+        .editor-header-row { display:flex; justify-content:space-between; align-items:center; }
+        .menu-wrapper { position: relative; }
+        .mt-20 { margin-top: 20px; }
+        .no-margin { margin-top: 0; }
+        .editor-note { margin-left: auto; font-size:0.9em; color:#D4AF37; font-family:'Cinzel', serif; }
+        .form-container { margin-top:20px; max-width:500px; }
+        .label-block { margin-top:15px; display:block; }
+        .input-full { width:100%; padding:15px; margin-top:8px; border-radius:var(--radius-md); border:3px solid #8B4513; }
+        .avatar-circle { width:60px; height:60px; background:var(--gradient-gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#2F4F4F; font-size:1.8rem; }
+        .account-name { font-size:1.2rem; }
+        .mt-12 { margin-top:12px; }
+        .mt-10 { margin-top:10px; }
+        .mt-5 { margin-top:5px; }
+        .account-email { margin-top:5px; font-size:0.9em; color:#D4AF37; }
+        .mt-8 { margin-top:8px; }
+        .ml-8 { margin-left:8px; }
+        .textarea-full { width:100%; min-height:80px; }
+
+        /* Гамбургер-меню в виде герба */
+        .nav {
+            position: relative;
+        }
+
+        #menu-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            border: 3px solid #8B4513;
+            color: #2F4F4F;
+            font-size: 28px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* fixed in top-left corner */
+            position: fixed;
+            left: 24px;
+            top: var(--menu-offset);
+            z-index: 10002;
+            text-shadow: none;
+        }
+
+        #menu-button:hover {
+            transform: rotate(90deg) scale(1.1);
+            border-color: #FFD700;
+        }
+
+        #menu-dropdown {
+            background: 
+                linear-gradient(rgba(139, 69, 19, 0.95), rgba(101, 67, 33, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%238B4513"/><path d="M50,10 L90,50 L50,90 L10,50 Z" fill="none" stroke="%23D4AF37" stroke-width="2"/></svg>');
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border: 3px solid #D4AF37;
+            padding: 15px;
+            min-width: 250px;
+            max-width: 90vw;
+            /* place the dropdown on the left under the fixed menu button */
+            position: fixed;
+            left: 24px;
+            top: calc(var(--menu-offset) + var(--menu-gap)); /* sits under header and slightly below the button */
+            display: none;
+            z-index: 10001;
+        }
+
+        .menu-item {
+            background: transparent;
+            border: 2px solid transparent;
+            text-align: left;
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: #F0E68C;
+            font-size: 1.1rem;
+            font-weight: 500;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: 'Cinzel', serif;
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.2), rgba(255, 215, 0, 0.2));
+            color: #FFD700;
+            transform: translateX(8px);
+            box-shadow: none;
+            border-color: #D4AF37;
+        }
+
+        .menu-item::before {
+            content: '⚔️';
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .menu-item:hover::before {
+            opacity: 1;
+            transform: rotate(45deg);
+        }
+
+        /* Разделы и модули в стиле рыцарских орденов */
+       .module-card {
+    background: 
+        linear-gradient(rgba(245, 245, 220, 0.9), rgba(222, 184, 135, 0.9)),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23DEB887"/><path d="M50,10 L90,50 L50,90 L10,50 Z" fill="none" stroke="%23A0522D" stroke-width="2"/></svg>');
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: none;
+    transition: var(--transition);
+    border: 3px solid #8B4513;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
+    margin-bottom: 20px;
+}
+
+.module-card::before {
+    content: '🛡️';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    z-index: 2;
+}
+
+.module-card:hover {
+    transform: translateY(-8px);
+    box-shadow: none;
+    border-color: #D4AF37;
+}
+
+.module-header {
+    padding: 25px;
+    background: linear-gradient(90deg, #8B4513, #654321, #8B4513);
+    color: #F0E68C;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    transition: var(--transition);
+    border-bottom: 2px solid #D4AF37;
+    font-family: 'Cinzel', serif;
+    position: relative;
+    z-index: 1;
+}
+
+.module-header:hover {
+    background: linear-gradient(90deg, #654321, #8B4513, #654321);
+    padding-left: 35px;
+}
+
+.module-header span {
+    transition: transform 0.3s ease;
+    font-size: 1.3rem;
+    color: #D4AF37;
+}
+
+.module-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.lesson-list {
+    background: rgba(245, 245, 220, 0.95);
+    padding: 0;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.lesson-list.open {
+    max-height: 400px;
+    padding: 25px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.lesson-list li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lesson-btn {
+    background: linear-gradient(135deg, #8B4513, #654321);
+    color: #F0E68C;
+    border: 2px solid #D4AF37;
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    text-align: center;
+    font-weight: 500;
+    font-family: 'Cinzel', serif;
+    box-sizing: border-box;
+    width: 100%;
+    white-space: normal;
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.lesson-btn:hover {
+    background: linear-gradient(135deg, #654321, #8B4513);
+    color: #FFD700;
+    border-color: #FFD700;
+    transform: translateY(-3px);
+    box-shadow: none;
+}
+
+        /* Locked buttons (requires registration or demo) */
+        .lesson-btn.locked {
+            opacity: 0.55;
+            filter: grayscale(70%);
+            cursor: not-allowed;
+            border-color: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+        .button.locked {
+            opacity: 0.6;
+            filter: grayscale(70%);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+.module-footer {
+    margin-top: auto;
+    padding: 20px;
+    padding-top: 15px;
+    border-top: 2px solid rgba(139, 69, 19, 0.3);
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(to bottom, 
+        transparent, 
+        rgba(222, 184, 135, 0.9) 50%);
+}
+
+.open-test {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    padding: 12px 15px;
+    box-sizing: border-box;
+}
+
+/* Убираем старый класс center-text */
+.center-text {
+    display: none;
+}
+
+/* Для поддержки старых браузеров */
+@supports not (gap: 1px) {
+    .lesson-list > * + * {
+        margin-top: 15px;
+    }
+}
+        /* Игровая сцена в стиле подземелья */
+        .lesson-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .code-area {
+            background: 
+                linear-gradient(rgba(47, 79, 79, 0.9), rgba(28, 47, 47, 0.9)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232F4F4F"/><path d="M0,20 L100,20 M0,40 L100,40 M0,60 L100,60 M0,80 L100,80" stroke="%23D4AF37" stroke-width="1"/></svg>');
+            padding: 35px;
+            border-radius: var(--radius-lg);
+            box-shadow: none;
+            border: 5px solid #8B4513;
+            position: relative;
+        }
+
+        .code-area::before {
+            content: '📜';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            background: #8B4513;
+            padding: 10px;
+            border-radius: 50%;
+            border: 3px solid #D4AF37;
+        }
+
+        .code-area textarea {
+            background: #1C2F2F;
+            color: #F0E68C;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 25px;
+            border-radius: var(--radius-md);
+            border: 3px solid #654321;
+            resize: vertical;
+            min-height: 280px;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+
+        .code-area textarea:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: none;
+        }
+
+        /* Сетка игры в стиле рыцарской арены */
+        .scene {
+            background: 
+                linear-gradient(rgba(139, 69, 19, 0.9), rgba(101, 67, 33, 0.9)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%238B4513"/><circle cx="50" cy="50" r="40" fill="none" stroke="%23D4AF37" stroke-width="2"/><circle cx="50" cy="50" r="20" fill="none" stroke="%23D4AF37" stroke-width="1"/></svg>');
+            padding: 35px;
+            border-radius: var(--radius-lg);
+            box-shadow: none;
+            color: #F0E68C;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 5px solid #D4AF37;
+            position: relative;
+        }
+
+        .scene::before {
+            content: '🏟️';
+            position: absolute;
+            top: -25px;
+            right: -25px;
+            font-size: 3rem;
+            opacity: 0.5;
+            transform: rotate(15deg);
+        }
+
+        .grid {
+            display: grid;
+            gap: 6px;
+            background: rgba(28, 47, 47, 0.8);
+            padding: 25px;
+            border-radius: var(--radius-md);
+            border: 3px solid #654321;
+            box-shadow: none;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #DEB887, #A0522D);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            cursor: pointer;
+            border: 2px solid #8B4513;
+        }
+
+        .cell:hover {
+            transform: scale(1.07);
+            box-shadow: none;
+            border-color: #D4AF37;
+        }
+
+        .cell.goal {
+            background: linear-gradient(135deg, #FFD700, #DAA520);
+            animation: treasureGlow 2s infinite;
+            box-shadow: none;
+            border: 3px solid #D4AF37;
+        }
+
+        @keyframes treasureGlow {
+            0%, 100% { transform: scale(1); box-shadow: none; }
+            50% { transform: scale(1.05); box-shadow: none; }
+        }
+
+        .cell.wall {
+            background: linear-gradient(135deg, #696969, #2F4F4F);
+            color: #C0C0C0;
+            box-shadow: none;
+            border: 2px solid #2F4F4F;
+        }
+
+        .cell.spike {
+            background: linear-gradient(135deg, #8B0000, #B22222);
+            color: #FFD700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell.spike::before {
+            content: '⚠️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            animation: spikeRotate 2s linear infinite;
+        }
+
+        @keyframes spikeRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .character {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2F4F4F;
+            font-weight: bold;
+            font-size: 1.4em;
+            box-shadow: none;
+            animation: knightMove 3s infinite;
+            border: 3px solid #8B4513;
+        }
+
+        /* Jump animation: quick upward movement then landing */
+        .character.jump {
+            transition: transform 0.25s ease-out;
+            transform: translateY(-22px) scale(1.05);
+            z-index: 100;
+        }
+
+        @keyframes knightMove {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        /* Формы и инпуты */
+        input, select, textarea {
+            padding: 18px;
+            border-radius: var(--radius-md);
+            border: 3px solid #8B4513;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            background: linear-gradient(rgba(245, 245, 220, 0.9), rgba(222, 184, 135, 0.9));
+            font-family: inherit;
+            color: #2F4F4F;
+            box-shadow: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: none;
+            transform: translateY(-2px);
+        }
+
+        /* Модальные окна */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeInOverlay 0.4s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: 
+                linear-gradient(rgba(139, 69, 19, 0.95), rgba(101, 67, 33, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%238B4513"/><path d="M10,10 L90,90 M90,10 L10,90" stroke="%23D4AF37" stroke-width="1"/></svg>');
+            padding: 50px;
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            width: 90%;
+            box-shadow: none;
+            animation: slideInModal 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 5px solid #D4AF37;
+            color: #F0E68C;
+        }
+
+        @keyframes slideInModal {
+            from {
+                opacity: 0;
+                transform: translateY(-80px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Визуальный редактор */
+        .editor-overlay {
+            background: rgba(0, 0, 0, 0.9);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            /* keep hidden by default so editor doesn't appear unexpectedly */
+            position: fixed;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .editor-panel {
+            background: 
+                linear-gradient(rgba(28, 47, 47, 0.95), rgba(47, 79, 79, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232F4F4F"/><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="none" stroke="%23D4AF37" stroke-width="2"/></svg>');
+            color: #F0E68C;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            border: 5px solid #D4AF37;
+            max-width: 1000px;
+        }
+
+        .editor-tools {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tool {
+            padding: 15px 25px;
+            border-radius: var(--radius-sm);
+            border: 3px solid #654321;
+            cursor: pointer;
+            background: linear-gradient(135deg, #8B4513, #654321);
+            color: #F0E68C;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Cinzel', serif;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .tool:hover {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            transform: translateY(-3px);
+            border-color: #D4AF37;
+        }
+
+        .tool.active {
+            background: var(--gradient-gold);
+            border-color: #FFD700;
+            color: #2F4F4F;
+            box-shadow: none;
+        }
+
+        /* Секции */
+        .section { 
+            display: none;
+            animation: fadeInSection 0.6s ease-out;
+        }
+        
+        @keyframes fadeInSection {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section.active { 
+            display: block;
+        }
+
+        /* Статусные сообщения */
+        #reg-status, #status {
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-top: 25px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: linear-gradient(135deg, rgba(34, 139, 34, 0.2), rgba(50, 205, 50, 0.2));
+            border: 3px solid #228B22;
+            color: #90EE90;
+            font-family: 'Cinzel', serif;
+        }
+
+        #reg-status.error, #status.error {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.2), rgba(178, 34, 34, 0.2));
+            border-color: #8B0000;
+            color: #FFB6C1;
+        }
+
+        #reg-status.warning, #status.warning {
+            background: linear-gradient(135deg, rgba(218, 165, 32, 0.2), rgba(255, 215, 0, 0.2));
+            border-color: #DAA520;
+            color: #FFD700;
+        }
+
+        /* Таймер */
+        #lesson-timer {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.3), rgba(101, 67, 33, 0.3));
+            padding: 20px 30px;
+            border-radius: var(--radius-md);
+            margin-top: 25px;
+            font-weight: 600;
+            font-size: 1.3rem;
+            border: 3px solid #D4AF37;
+            font-family: 'Cinzel', serif;
+        }
+
+        #timer-display {
+            font-family: 'Courier New', monospace;
+            color: #FFD700;
+            font-weight: 700;
+            text-shadow: none;
+            letter-spacing: 3px;
+        }
+
+        /* Список в аккаунте */
+        #account-list {
+            max-height: 300px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+            background: rgba(245, 245, 220, 0.1);
+            border-radius: var(--radius-md);
+            margin-top: 15px;
+            border: 3px solid #654321;
+        }
+
+        #account-list::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        #account-list::-webkit-scrollbar-track {
+            background: #8B4513;
+            border-radius: 6px;
+        }
+
+        #account-list::-webkit-scrollbar-thumb {
+            background: var(--gradient-gold);
+            border-radius: 6px;
+            border: 2px solid #8B4513;
+        }
+
+        #account-list li {
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.8), rgba(101, 67, 33, 0.8));
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+
+        #account-list li:hover {
+            transform: translateX(8px);
+            box-shadow: var(--shadow-md);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.8), rgba(255, 215, 0, 0.8));
+            border-color: #D4AF37;
+            color: #2F4F4F;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .lesson-layout {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .card {
+                padding: 40px 30px;
+            }
+            
+            h1 {
+                font-size: 3rem;
+            }
+            
+            #home h1 {
+                font-size: 3.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 25px;
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            #home h1 {
+                font-size: 3rem;
+            }
+            
+            .button {
+                padding: 16px 28px;
+                font-size: 1.1rem;
+            }
+            
+            .module-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .lesson-list {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                border: 10px solid transparent;
+                border-image: linear-gradient(45deg, #D4AF37, #8B4513) 1;
+            }
+            
+            .card {
+                padding: 30px 20px;
+            }
+            
+            #home .card {
+                padding: 50px 30px;
+            }
+            
+            #home h1 {
+                font-size: 2.5rem;
+            }
+            
+            .button.start {
+                padding: 20px 35px;
+                font-size: 1.4rem;
+            }
+            
+            .lesson-layout {
+                gap: 25px;
+            }
+            
+            .code-area, .scene {
+                padding: 25px 20px;
+            }
+            
+            .cell {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+</head>
+<body>
+    <audio id="bg-music" src="music/Strange Moods.mp3" loop autoplay></audio>
+    
+    <!-- Гербовые украшения -->
+    <div id="particles-container" class="particles"></div>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo">Кодекс Рыцаря</div>
+            <button id="sound-button" title="Звук">🎵</button>
+        </div>
+        
+        <div class="nav">
+            <div class="menu-wrapper">
+                <button id="menu-button" aria-controls="menu-dropdown" aria-expanded="false" title="Меню">⚔️</button>
+                <div id="menu-dropdown" role="menu" aria-hidden="true">
+                    <div class="menu-list">
+                        <button class="menu-item" role="menuitem" tabindex="-1" data-target="home">🏰 Главная</button>
+                        <button class="menu-item" role="menuitem" tabindex="-1" data-target="modules">📜 Разделы</button>
+                        <button class="menu-item" role="menuitem" tabindex="-1" data-target="account">🛡️ Аккаунт</button>
+                        <button class="menu-item" role="menuitem" tabindex="-1" data-target="settings">⚙️ Настройки</button>
+                        <button class="menu-item" role="menuitem" tabindex="-1" id="menu-register" data-target="register">✍️ Зарегистрироваться</button>
+                        <button class="menu-item" role="menuitem" tabindex="-1" id="menu-demo">👁️ Демо</button>
+                        <button class="menu-item hidden" role="menuitem" tabindex="-1" id="menu-logout">🚪 Выйти</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <span class="version-label">Версия 1.0</span>
+            <button id="header-register-btn" class="button btn-alt" style="margin-left:10px;">✍️ Зарегистрироваться</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <section id="home" class="section active">
+                <div class="card" id="home-panel">
+                    <h1>⚔️ Кодекс Рыцаря</h1>
+                    <p class="intro-text">Пройдите испытания в рыцарском турнире, решая задачи программирования. Докажите своё мастерство в замке знаний!</p>
+                    <div class="home-actions">
+                        <button class="button start" id="start-button">⚔️ Начать турнир</button>
+                    </div>
+                    <div class="feature-box">
+                        🏆 <strong>Новые возможности:</strong> Рыцарские испытания, система достижений, турнирный таймер, сохранение подвигов!
+                    </div>
+                </div>
+            </section>
+
+           <section id="modules" class="section">
+    <h1>⚔️ Рыцарские Испытания</h1>
+    <p>Выберите турнир, чтобы открыть список испытаний.</p>
+    <div class="module-list module-grid">
+        <!-- Турнир 1 -->
+        <div class="module-card">
+            <div class="module-header" data-module="1">
+                <strong>Турнир 1: Посвящение</strong>
+                <span>⚔️</span>
+            </div>
+            <div class="module-content">
+                <ul class="lesson-list" data-module="1">
+                    <li><button class="button lesson-btn" data-module="1" data-lesson="1">Испытание 1.1</button></li>
+                    <li><button class="button lesson-btn" data-module="1" data-lesson="2">Испытание 1.2</button></li>
+                    <li><button class="button lesson-btn" data-module="1" data-lesson="3">Испытание 1.3</button></li>
+                    <li><button class="button lesson-btn" data-module="1" data-lesson="4">Испытание 1.4</button></li>
+                </ul>
+                <div class="module-footer">
+                    <button class="button open-test" data-target="test-modal-1">🧾 Пройти тест модуля 1</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Турнир 2 -->
+        <div class="module-card">
+            <div class="module-header" data-module="2">
+                <strong>Турнир 2: Базовая Подготовка</strong>
+                <span>⚔️</span>
+            </div>
+            <div class="module-content">
+                <ul class="lesson-list" data-module="2">
+                    <li><button class="button lesson-btn" data-module="2" data-lesson="1">Испытание 2.1</button></li>
+                    <li><button class="button lesson-btn" data-module="2" data-lesson="2">Испытание 2.2</button></li>
+                    <li><button class="button lesson-btn" data-module="2" data-lesson="3">Испытание 2.3</button></li>
+                    <li><button class="button lesson-btn" data-module="2" data-lesson="4">Испытание 2.4</button></li>
+                    <li><button class="button lesson-btn" data-module="2" data-lesson="5">Испытание 2.5</button></li>
+                </ul>
+                <div class="module-footer">
+                    <button class="button open-test" data-target="test-modal-2">🧾 Пройти тест модуля 2</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Турнир 3 -->
+        <div class="module-card">
+            <div class="module-header" data-module="3">
+                <strong>Турнир 3: Воинское Искусство</strong>
+                <span>⚔️</span>
+            </div>
+            <div class="module-content">
+                <ul class="lesson-list" data-module="3">
+                    <li><button class="button lesson-btn" data-module="3" data-lesson="1">Испытание 3.1</button></li>
+                    <li><button class="button lesson-btn" data-module="3" data-lesson="2">Испытание 3.2</button></li>
+                    <li><button class="button lesson-btn" data-module="3" data-lesson="3">Испытание 3.3</button></li>
+                    <li><button class="button lesson-btn" data-module="3" data-lesson="4">Испытание 3.4</button></li>
+                    <li><button class="button lesson-btn" data-module="3" data-lesson="5">Испытание 3.5</button></li>
+                </ul>
+                <div class="module-footer">
+                    <button class="button open-test" data-target="test-modal-3">🧾 Пройти тест модуля 3</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Турнир 4 -->
+        <div class="module-card">
+            <div class="module-header" data-module="4">
+                <strong>Турнир 4: Мастерство</strong>
+                <span>⚔️</span>
+            </div>
+            <div class="module-content">
+                <ul class="lesson-list" data-module="4">
+                    <li><button class="button lesson-btn" data-module="4" data-lesson="1">Испытание 4.1</button></li>
+                    <li><button class="button lesson-btn" data-module="4" data-lesson="2">Испытание 4.2</button></li>
+                    <li><button class="button lesson-btn" data-module="4" data-lesson="3">Испытание 4.3</button></li>
+                    <li><button class="button lesson-btn" data-module="4" data-lesson="4">Испытание 4.4</button></li>
+                    <li><button class="button lesson-btn" data-module="4" data-lesson="5">Испытание 4.5</button></li>
+                    <li><button class="button lesson-btn" data-module="4" data-lesson="6">Испытание 4.6</button></li>
+                </ul>
+                <div class="module-footer">
+                    <button class="button open-test" data-target="test-modal-4">🧾 Пройти тест модуля 4</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Турнир 5 -->
+        <div class="module-card">
+            <div class="module-header" data-module="5">
+                <strong>Турнир 5: Великий Турнир</strong>
+                <span>⚔️</span>
+            </div>
+            <div class="module-content">
+                <ul class="lesson-list" data-module="5">
+                    <li><button class="button lesson-btn" data-module="5" data-lesson="1">Испытание 5.1</button></li>
+                    <li><button class="button lesson-btn" data-module="5" data-lesson="2">Испытание 5.2</button></li>
+                    <li><button class="button lesson-btn" data-module="5" data-lesson="3">Испытание 5.3</button></li>
+                    <li><button class="button lesson-btn" data-module="5" data-lesson="4">Испытание 5.4</button></li>
+                    <li><button class="button lesson-btn" data-module="5" data-lesson="5">Испытание 5.5</button></li>
+                </ul>
+                <div class="module-footer">
+                    <button class="button open-test" data-target="test-modal-5">🧾 Пройти тест модуля 5</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-25">
+        <button class="button btn-alt" id="back-from-modules">🏰 Назад в замок</button>
+    </div>
+</section>
+
+            <section id="lesson" class="section">
+                <h1 id="lesson-title">⚔️ Испытание</h1>
+
+                <!-- Theory modal -->
+                <div id="theory-overlay" class="modal-overlay">
+                    <div class="modal">
+                        <h2 id="theory-title">⚔️ Свиток знаний</h2>
+                        <div id="theory-content" class="mt-15">Загрузка...</div>
+                        <div class="right-actions">
+                            <button class="button" id="close-theory">📜 Свернуть свиток</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lesson-layout">
+                    <div class="code-area">
+                        <label for="code-input"><strong>Напишите код рыцарских команд (right,left,up,down | right 3 | repeat 2 [right down])</strong></label>
+                        <textarea id="code-input">right right down right</textarea>
+                        <div class="controls-row">
+                            <button class="button" id="run-code">⚔️ Начать сражение</button>
+                            <button class="button btn-alt" id="reset-scene">🔄 Перегруппироваться</button>
+                            <button class="button btn-dark btn-hidden" id="edit-level">🏰 Изменить замок</button>
+                            <button class="button btn-back" id="back-from-lesson">🏰 Назад к турнирам</button>
+                        </div>
+                    </div>
+
+                    <div class="scene">
+                        <div class="scene-title">Рыцарская Арена</div>
+                        <div id="grid" class="grid"></div>
+                        <div id="status" class="status-inline">Статус: ожидание приказа</div>
+                        <div id="lesson-timer" class="timer-inline">Время турнира: <span id="timer-display">00:00</span></div>
+                    </div>
+                    <aside id="theory-sidebar" class="theory-sidebar">
+                        <h3 class="no-margin">📜 Свиток теории</h3>
+                        <div id="theory-short" class="theory-short">Здесь размещены ключевые подсказки и пояснения для текущего испытания. Нажмите на «Смотреть свиток», чтобы открыть полный текст теории.</div>
+                        <div class="small-controls">
+                            <button class="button" id="open-full-theory">📚 Смотреть свиток</button>
+                            <button class="button btn-alt" id="close-theory-sidebar">✖ Скрыть</button>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- Editor modal -->
+            <div id="editor-overlay" class="editor-overlay">
+                <div class="editor-panel">
+                    <div class="editor-header-row">
+                        <h3 class="no-margin">⚒️ Строитель Замка</h3>
+                        <div>
+                            <button class="button" id="editor-save">💾 Сохранить замок</button>
+                            <button class="button btn-alt" id="editor-cancel">✖ Покинуть строительство</button>
+                        </div>
+                    </div>
+                    <div class="editor-tools-row">
+                        <div class="editor-tools">
+                            <div class="tool active" data-tool="empty">□ Пусто</div>
+                            <div class="tool" data-tool="wall">🧱 Стена</div>
+                            <div class="tool" data-tool="spike">⚠ Ловушка</div>
+                            <div class="tool" data-tool="start">🚩 Старт</div>
+                            <div class="tool" data-tool="goal">🏁 Сокровище</div>
+                        </div>
+                        <div class="editor-note">Клик по ячейке — разместить объект</div>
+                    </div>
+                    <div id="editor-grid" class="grid mt-20"></div>
+                </div>
+            </div>
+
+            <section id="register" class="section">
+                <h1>📜 Посвящение в Рыцари</h1>
+                <p>Зарегистрируйтесь для участия в турнирах. Строитель замка доступен только для Магистров Ордена.</p>
+                    <p><strong>Примечание:</strong> Без регистрации (или в демо-режиме) вы не сможете проходить испытания и сохранять результаты.</p>
+                <div class="form-container">
+                    <label>📧 Свиток-письмо (Email):</label>
+                    <input id="reg-email" type="email" class="input-full">
+                    <label class="label-block">🛡️ Имя рыцаря:</label>
+                    <input id="reg-name" type="text" class="input-full">
+                    <label class="label-block">⚔️ Ранг в ордене:</label>
+                    <select id="reg-role" class="input-full">
+                        <option value="student">👨‍🎓 Оруженосец</option>
+                        <option value="teacher">👩‍🏫 Магистр Ордена</option>
+                    </select>
+                    <div class="register-actions">
+                        <button class="button" id="reg-submit">⚔️ Принять посвящение</button>
+                        <button class="button btn-alt" id="reg-logout">🚪 Покинуть орден</button>
+                    </div>
+                    <div id="reg-status" class="mt-20"></div>
+                    <div class="account-actions">
+                        <button class="button btn-dark" id="reg-auto-teacher">👩‍🏫 Быстрое посвящение (Магистр)</button>
+                        <button class="button btn-back" id="reg-auto-student">👨‍🎓 Быстрое посвящение (Оруженосец)</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demo modal -->
+            <div id="demo-modal" class="modal-overlay">
+                <div class="modal">
+                    <h2>👁️ Демо — Просмотр</h2>
+                    <p>Выберите режим демо для просмотра платформы. В демо-режиме вы не сможете проходить и сохранять прогресс.</p>
+                    <div class="register-actions">
+                        <button class="button" id="demo-teacher">👩‍🏫 Просмотр как преподаватель</button>
+                        <button class="button btn-alt" id="demo-student">👨‍🎓 Просмотр как ученик</button>
+                        <button class="button btn-dark" id="demo-exit">✖ Выйти из демо</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Register modal (optional convenient popup) -->
+            <div id="register-modal" class="modal-overlay">
+                <div class="modal">
+                    <h2>📜 Посвящение (быстрая форма)</h2>
+                    <div class="form-container">
+                        <label>📧 Email:</label>
+                        <input id="reg-email-modal" type="email" class="input-full">
+                        <label class="label-block">🛡️ Имя:</label>
+                        <input id="reg-name-modal" type="text" class="input-full">
+                        <label class="label-block">⚔️ Роль:</label>
+                        <select id="reg-role-modal" class="input-full">
+                            <option value="student">👨‍🎓 Оруженосец</option>
+                            <option value="teacher">👩‍🏫 Магистр Ордена</option>
+                        </select>
+                        <div class="register-actions">
+                            <button class="button" id="reg-submit-modal">⚔️ Принять посвящение</button>
+                            <button class="button btn-alt" id="reg-cancel-modal">✖ Отмена</button>
+                        </div>
+                        <div id="reg-status-modal" class="mt-20"></div>
+                    </div>
+                </div>
+            </div>
+
+            <section id="account" class="section">
+                <h1>🛡️ Герб Рыцаря</h1>
+                <div class="form-container">
+                    <div class="account-header">
+                        <div class="avatar-circle">⚔️</div>
+                        <div>
+                            <div class="account-name"><strong>Рыцарь:</strong> <span id="account-name">—</span></div>
+                            <div class="account-email mt-5"><strong>Свиток-письмо:</strong> <span id="account-email">—</span></div>
+                        </div>
+                    </div>
+                    <div class="mt-15"><strong>⚔️ Ранг:</strong> <span id="account-role">—</span></div>
+                    <div class="mt-12"><strong>🏆 Победы в турнирах:</strong> <span id="account-completed">0</span></div>
+                    <div class="mt-10"><strong>⏱️ Среднее время победы:</strong> <span id="account-average">—</span></div>
+                    <div class="mt-12"><strong>📊 Тесты пройдено:</strong> <span id="account-tests-count">0</span></div>
+                    <div class="mt-8"><strong>⭐ Средний балл тестов:</strong> <span id="account-tests-average">—</span></div>
+                    <div class="mt-12"><strong>📋 Результаты тестов:</strong>
+                        <ul id="account-tests-list" class="mt-8"></ul>
+                    </div>
+                    <div class="mt-20">
+                        <strong>📜 Список подвигов:</strong>
+                        <ul id="account-list" class="mt-12"></ul>
+                    </div>
+                    <div class="mt-20 account-actions">
+                        <button class="button" id="account-refresh">🔄 Обновить герб</button>
+                        <button class="button btn-alt ml-8" id="account-back">🏰 Назад в замок</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="settings" class="section">
+                <h1>⚙️ Оружейная</h1>
+                <div class="mt-20">
+                    <label for="volume">🎵 Громкость менестрелей: <span id="vol-label">100%</span></label>
+                    <input id="volume" type="range" min="0" max="100" value="100" class="input-full mt-10">
+                </div>
+
+                <div class="mt-25">
+                    <label for="playlist-select">🎼 Свитки мелодий:</label>
+                    <select id="playlist-select" class="input-full">
+                        <option value="music/Strange Moods.mp3">🎵 Странные Настроения.mp3</option>
+                        <option value="music/Вадим Плотников - Дело в синей шляпе.mp3">🎵 Вадим Плотников - Дело в синей шляпе.mp3</option>
+                        <option value="music/Вадим Плотников - Косвенный путь к успеху.mp3">🎵 Вадим Плотников - Косвенный путь к успеху.mp3</option>
+                        <option value="music/Вадим Плотников - Я и мои аппараты.mp3">🎵 Вадим Плотников - Я и мои аппараты.mp3</option>
+                    </select>
+                </div>
+
+                <div class="mt-25">
+                    <label for="font-size">📜 Размер рунических символов: <span id="font-size-label">16px</span></label>
+                    <input id="font-size" type="range" min="12" max="24" value="16" class="input-full mt-10">
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+
+    <!-- Module test modals -->
+    <!--
+        Test modal 1 answers (for instructor/debug):
+        q1 = B
+        q2 = a
+        q4 = true
+        q3 is open-ended (manual review)
+    -->
+    <div id="test-modal-1" class="modal-overlay">
+        <div class="modal">
+            <h2>Тест модуля 1 — Основы</h2>
+            <form>
+                <h4>1) Выберите правильный вариант: Что делает команда <code>right</code>?</h4>
+                <label><input type="radio" name="q1" value="A"> Перемещает влево</label><br>
+                <label><input type="radio" name="q1" value="B"> Перемещает вправо</label><br>
+                <label><input type="radio" name="q1" value="C"> Поднимает флаг</label>
+
+                <h4>2) Соответствие: выберите букву, соответствующую описанию</h4>
+                <p>1 — <select name="q2"><option value="a">Движение</option><option value="b">Атака</option></select></p>
+
+                <h4>3) Открытый вопрос: Кратко опишите стратегию, чтобы обойти стену.</h4>
+                <textarea name="q3" class="textarea-full" placeholder="Напишите ответ..."></textarea>
+
+                <h4>4) Верно / Неверно: Команда <code>repeat 2 [right down]</code> выполнит 2 шага вправо и 2 шага вниз подряд.</h4>
+                <label><input type="radio" name="q4" value="true"> Верно</label>
+                <label><input type="radio" name="q4" value="false"> Неверно</label>
+
+                <div class="right-actions mt-12">
+                    <button type="button" class="button close-test">Закрыть</button>
+                    <button type="submit" class="button">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--
+        Test modal 2 answers:
+        q1 = A, q2 = b, q3 open
+    -->
+    <div id="test-modal-2" class="modal-overlay">
+        <div class="modal">
+            <h2>Тест модуля 2 — Навигация</h2>
+            <form>
+                <h4>1) Множественный выбор: Какие команды есть в языке рыцаря?</h4>
+                <label><input type="checkbox" name="t2q1" value="right"> right</label>
+                <label><input type="checkbox" name="t2q1" value="fly"> fly</label>
+                <label><input type="checkbox" name="t2q1" value="down"> down</label>
+
+                <h4>2) Выбор из списка: Что делает <code>left</code>?</h4>
+                <select name="t2q2">
+                    <option value="a">Сохраняет прогресс</option>
+                    <option value="b">Перемещает влево</option>
+                </select>
+
+                <h4>3) Открытый: Когда стоит использовать repeat?</h4>
+                <textarea name="t2q3" class="textarea-full"></textarea>
+                
+                <div class="right-actions mt-12">
+                    <button type="button" class="button close-test">Закрыть</button>
+                    <button type="submit" class="button">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--
+        Test modal 3 answers:
+        m3q1 should include opt2, m3q2 = 2
+    -->
+    <div id="test-modal-3" class="modal-overlay">
+        <div class="modal">
+            <h2>Тест модуля 3 — Ловушки и обходы</h2>
+            <form>
+                <h4>1) Множественный выбор: Какие действия помогут избежать ловушки?</h4>
+                <label><input type="checkbox" name="m3q1" value="opt1"> Идти прямо</label><br>
+                <label><input type="checkbox" name="m3q1" value="opt2"> Обойти по бокам</label><br>
+                <label><input type="checkbox" name="m3q1" value="opt3"> Прыгнуть</label><br>
+
+                <h4>2) Соответствие: выберите правильную пару</h4>
+                <p>А — <select name="m3q2"><option value="1">Действие 1</option><option value="2">Действие 2</option></select></p>
+
+                <h4>3) Открытый: Опишите одну тактику для обхода лабиринта.</h4>
+                <textarea name="m3q3" class="textarea-full"></textarea>
+
+                <div class="right-actions mt-12">
+                    <button type="button" class="button close-test">Закрыть</button>
+                    <button type="submit" class="button">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Test modal 4 answers: (internal keys) -->
+    <div id="test-modal-4" class="modal-overlay">
+        <div class="modal">
+            <h2>Тест модуля 4 — Комбинации</h2>
+            <form>
+                <h4>1) Что делает команда <code>repeat 3 [right]</code>?</h4>
+                <label><input type="radio" name="m4q1" value="a"> Три шага вправо</label><br>
+                <label><input type="radio" name="m4q1" value="b"> Повторить группу действий 3 раза</label><br>
+
+                <h4>2) Открытый: Опишите, как оптимизировать маршрут.</h4>
+                <textarea name="m4q2" class="textarea-full"></textarea>
+
+                <div class="right-actions mt-12">
+                    <button type="button" class="button close-test">Закрыть</button>
+                    <button type="submit" class="button">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--
+        Test modal 5 answers:
+        m5q1 = a
+    -->
+    <div id="test-modal-5" class="modal-overlay">
+        <div class="modal">
+            <h2>Тест модуля 5 — Финал</h2>
+            <form>
+                <h4>1) Выберите верное утверждение:</h4>
+                <label><input type="radio" name="m5q1" value="a"> Победа достигается правильной стратегией</label><br>
+                <label><input type="radio" name="m5q1" value="b"> Нельзя использовать команды</label><br>
+
+                <h4>2) Открытый: Ваши впечатления от турнира.</h4>
+                <textarea name="m5q2" class="textarea-full"></textarea>
+
+                <div class="right-actions mt-12">
+                    <button type="button" class="button close-test">Закрыть</button>
+                    <button type="submit" class="button">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
